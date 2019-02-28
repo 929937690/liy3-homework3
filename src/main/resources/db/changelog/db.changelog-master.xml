@@ -20,6 +20,7 @@
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
+
     </changeSet>
 
 </databaseChangeLog>

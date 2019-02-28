@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.executable.ValidateOnExecution;
 
 @RestController
 public class SignUpController {
@@ -26,19 +24,13 @@ public class SignUpController {
     @Autowired
     User.UserBuilder userBuilder;
 
-    @PostMapping("/register")
-
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.setValidator(new SignUpValidator());
-    }
-
+    @PostMapping("/signup")
 
     public ResponseEntity<Profile> register(@RequestBody @Valid SignUp signup) {
         userDetailsManager.createUser(userBuilder
                 .username(signup.getEmail())
                 .password(signup.getPassword())
-                .roles("AUTHOR")
+                .roles("BLOGGER")
                 .build());
 
         Profile profile = new Profile();
@@ -47,5 +39,10 @@ public class SignUpController {
         profile.setEmail(signup.getEmail());
 
         return new ResponseEntity<>(profileRepository.save(profile), HttpStatus.CREATED);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder){
+        binder.setValidator(new SignUpValidator());
     }
 }

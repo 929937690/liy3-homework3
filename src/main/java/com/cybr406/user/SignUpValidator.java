@@ -15,7 +15,11 @@ public class SignUpValidator implements Validator {
 
         @Override
         public void validate(Object target, Errors errors) {
-
+            ValidationUtils.rejectIfEmptyOrWhitespace(
+                    errors,
+                    "email",
+                    "field.required",
+                    "Email is a required field.");
             ValidationUtils.rejectIfEmptyOrWhitespace(
                     errors,
                     "password",
@@ -34,11 +38,7 @@ public class SignUpValidator implements Validator {
                     "field.required",
                     "Last name is a required field.");
 
-            ValidationUtils.rejectIfEmptyOrWhitespace(
-                    errors,
-                    "email",
-                    "field.required",
-                    "Email is a required field.");
+
         }
     }
 

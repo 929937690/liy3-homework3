@@ -5,25 +5,36 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
     @Value("${spring.h2.console.enabled}")
     boolean h2ConsoleEnabled;
+
+    @Bean
+    JdbcUserDetailsManager jdbcUserDetailsManager(){
+        return new JdbcUserDetailsManager(dataSource);
+    }
+
+    @Bean
+    User.UserBuilder userBuilder() {
+        PasswordEncoder passwordEncoder = passwordEncoder();
+        User.UserBuilder users = User.builder();
+        users.passwordEncoder(passwordEncoder::encode);
+        return users;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -44,9 +55,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/").permitAll()
-                .antMatchers(HttpMethod.POST, "/").permitAll()
-                .antMatchers(HttpMethod.GET, "/users", "/users/**", "/profiles", "/profiles/**").permitAll()
-                .anyRequest().hasAnyRole("ADMIN", "PROFILE")
+                .antMatchers(HttpMethod.POST, "/signup").permitAll()
+                .antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").permitAll()
+                //.antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").hasAuthority("ADMIN")
+                //.antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").anonymous()
+                //.antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").hasRole("BLOGGER")
+                .anyRequest().hasAnyRole("ADMIN","BLOGGER")
+                //.anyRequest().authenticated()
                 .and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -58,12 +73,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         });
     }
 
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
     @Autowired
     DataSource dataSource;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-
 
         PasswordEncoder passwordEncoder = passwordEncoder();
 
@@ -77,7 +96,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .withUser(users
                         .username("admin")
                         .password("admin")
-                        .roles("ADMIN"));
+                        .roles("ADMIN"))
+                .withUser(users
+                        .username("blogger")
+                        .password("password")
+                        .roles("BLOGGER"));
+
     }
 
 }

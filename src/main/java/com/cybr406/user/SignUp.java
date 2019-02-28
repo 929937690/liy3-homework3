@@ -1,6 +1,6 @@
 package com.cybr406.user;
 
-public class Registration {
+public class SignUp {
 
     String password;
 
