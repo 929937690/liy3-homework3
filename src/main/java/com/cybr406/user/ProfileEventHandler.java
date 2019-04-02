@@ -29,4 +29,6 @@ public class ProfileEventHandler {
         logger.info("Profile {} created.", profile.getEmail());
     }
 
+
+
 }

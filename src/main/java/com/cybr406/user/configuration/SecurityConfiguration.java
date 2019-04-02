@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,6 +37,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return users;
     }
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -57,9 +64,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/").permitAll()
                 .antMatchers(HttpMethod.POST, "/signup").permitAll()
                 .antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").permitAll()
-                //.antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").hasAuthority("ADMIN")
-                //.antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").anonymous()
-                //.antMatchers(HttpMethod.GET, "/profiles", "/profiles/**").hasRole("BLOGGER")
                 .anyRequest().hasAnyRole("ADMIN","BLOGGER")
                 //.anyRequest().authenticated()
                 .and()
