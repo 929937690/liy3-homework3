@@ -40,7 +40,8 @@ dependencies {
 	testImplementation 'org.apache.httpcomponents:httpclient'
 	testImplementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
+	
+} 
 
 test {
 	testLogging {

@@ -88,24 +88,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-        PasswordEncoder passwordEncoder = passwordEncoder();
-
-        User.UserBuilder users = User.builder();
-        users.passwordEncoder(passwordEncoder::encode);
-
         auth
                 .jdbcAuthentication()
-                .dataSource(dataSource)
-                .withDefaultSchema()
-                .withUser(users
-                        .username("admin")
-                        .password("admin")
-                        .roles("ADMIN"))
-                .withUser(users
-                        .username("blogger")
-                        .password("password")
-                        .roles("BLOGGER"));
-
+                .dataSource(dataSource);
     }
 
 }
