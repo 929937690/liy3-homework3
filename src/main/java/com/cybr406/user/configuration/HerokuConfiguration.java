@@ -19,11 +19,6 @@ import java.net.URISyntaxException;
 @Profile("heroku")
 public class HerokuConfiguration {
 
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-  }
-
 
   @Bean
   public DataSource dataSource() throws URISyntaxException {
